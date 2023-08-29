@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Comment Form</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/create_comment.css' %}">
+</head>
+<body>
+<form method="post" enctype="multipart/form-data" id="comment-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <button type="submit">Додати коментар</button>
+</form>
+
+<div id="comment-preview"></div>
+<div id="validation-message"></div>
+<button id="italic-btn">[i]</button>
+<button id="strong-btn">[strong]</button>
+<button id="code-btn">[code]</button>
+<button id="link-btn">[a]</button>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    var textInput = $('textarea[name="text"]');
+    var imageInput = $('input[name="image"]');
+    var textFileInput = $('input[name="text_file"]');
+    var previewDiv = $('#comment-preview');
+    var validationMessage = $('#validation-message');
+    var italicBtn = $('#italic-btn');
+    var strongBtn = $('#strong-btn');
+    var codeBtn = $('#code-btn');
+    var linkBtn = $('#link-btn');
+
+    textInput.on('input', function() {
+        var text = textInput.val();
+
+        // Попередній перегляд
+        $.ajax({
+            type: 'POST',
+            url: '{% url "preview_comment" %}',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'text': text
+            },
+            success: function(response) {
+                previewDiv.html(response.preview);
+            }
+        });
+    });
+
+    italicBtn.on('click', function(e) {
+        e.preventDefault();
+        insertTag('<i></i>');
+    });
+
+    strongBtn.on('click', function(e) {
+        e.preventDefault();
+        insertTag('<strong></strong>');
+    });
+
+    codeBtn.on('click', function(e) {
+        e.preventDefault();
+        insertTag('<code></code>');
+    });
+
+    linkBtn.on('click', function(e) {
+        e.preventDefault();
+        insertTag('<a href=""></a>');
+    });
+
+    $('#comment-form').on('submit', function(event) {
+        event.preventDefault();
+        var text = textInput.val();
+        var image = imageInput.prop('files')[0];
+        var textFile = textFileInput.prop('files')[0];
+        var captchaValue = $('input[name="captcha_1"]').val();
+
+        if (!validateCaptcha()) {
+            validationMessage.text('Введіть коректний код Captcha.');
+            return;
+        } else {
+            validationMessage.empty();
+        }
+
+        if (containsSqlKeywords(text)) {
+            validationMessage.text('Введення SQL-команд заборонено.');
+            return;
+        } else {
+            validationMessage.empty();
+        }
+
+        var formData = new FormData();
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        formData.append('text', text);
+        formData.append('captcha', captchaValue);
+
+        if (image) {
+            formData.append('image', image);
+        }
+
+        if (textFile) {
+            formData.append('text_file', textFile);
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "create_comment" %}',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.href = '{% url "comment_list" %}';
+                } else {
+                    validationMessage.text('Помилка при створенні коментаря.');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                validationMessage.text('Помилка при відправці запиту.');
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    function insertTag(tag) {
+        var currentText = textInput.val();
+        var newText = currentText + tag;
+        textInput.val(newText);
+    }
+
+    function containsSqlKeywords(text) {
+        var sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE'];
+        var regex = new RegExp('\\b(' + sqlKeywords.join('|') + ')\\b', 'i');
+        return regex.test(text);
+    }
+
+    function validateCaptcha() {
+        var captchaInput = $('input[name="captcha_1"]');
+        var captchaValue = captchaInput.val();
+        return captchaValue.trim() !== '';
+    }
+});
+
+</script>
+
+</body>
+</html>

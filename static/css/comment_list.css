@@ -1,0 +1,30 @@
+body {
+            font-family: Arial, sans-serif;
+        }
+        .comments {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .comment {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .comment img {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin-top: 5px;
+        }
+        .comment a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .replies {
+            margin-top: 10px;
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid #ccc;
+        }

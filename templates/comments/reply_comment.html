@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Відповідь на коментар</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/reply_comment.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Відповідь на коментар</h1>
+        <p>Відповідаєте на коментар від користувача: <strong>{{ parent_comment.user.username }}</strong></p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="{{ form.text.id_for_label }}">Текст відповіді:</label>
+            {{ form.text }}
+            <label for="{{ form.image.id_for_label }}">Зображення:</label>
+            {{ form.image }}
+            <label for="{{ form.text_file.id_for_label }}">Текстовий файл:</label>
+            {{ form.text_file }}
+            <button type="submit">Відправити відповідь</button>
+        </form>
+        <a href="{% url 'comment_list' %}">Повернутися до списку коментарів</a>
+    </div>
+</body>
+</html>
+

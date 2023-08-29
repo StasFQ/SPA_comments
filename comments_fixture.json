@@ -1,0 +1,63 @@
+[
+{
+  "model": "comments.comment",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "email": "stas@gmail.com",
+    "text": "Hearts",
+    "image": "images/Love_Sunrises_and_sunsets_Fingers_Hands_Heart_Sun_532758_1280x897.jpg",
+    "text_file": "",
+    "parent": null,
+    "created_at": "2023-08-29T08:00:11.978Z",
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 1,
+    "level": 0
+  }
+},
+{
+  "model": "comments.log",
+  "pk": 11,
+  "fields": {
+    "timestamp": "2023-08-29T08:00:11.980Z",
+    "message": "comment Hearts is saved"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$kxJW99u3ImLWOatfoJl912$Q0D1Iq+/ui2p5ct9mmMFprFu5cctqjNAp89AYTrJKos=",
+    "last_login": "2023-08-29T06:34:45.825Z",
+    "is_superuser": false,
+    "username": "Stas23",
+    "first_name": "",
+    "last_name": "",
+    "email": "stas@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-08-29T06:34:44.865Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$MSvBrJelIBxBiaDTKAh55G$eLQM0KDCBWb3HQw4j9q8XcvHkqyEzGgSLsaaysaiky8=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2023-08-29T07:55:20.281Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]

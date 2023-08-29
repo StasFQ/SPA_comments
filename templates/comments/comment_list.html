@@ -1,0 +1,102 @@
+{% load mptt_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список коментарів</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/comment_list.css' %}">
+</head>
+<body>
+    <h1>Загальні коментарі</h1>
+    <h2><a href="{% url 'create_comment' %}">Додати коментар</a></h2>
+    <a href="?sort=asc&order_by=user__username">Сортувати за ім'ям (за зростанням)</a> |
+    <a href="?sort=desc&order_by=user__username">Сортувати за ім'ям (за спаданням)</a>
+
+    <a href="?sort=asc&order_by=email">Сортувати за емейлом (за зростанням)</a> |
+    <a href="?sort=desc&order_by=email">Сортувати за емейлом (за спаданням)</a>
+
+    <a href="?sort=asc&order_by=created_at">Сортувати за датою (за зростанням)</a> |
+    <a href="?sort=desc&order_by=created_at">Сортувати за датою (за спаданням)</a>
+
+    <ul class="comments">
+        {% for custom_model in custom_models %}
+            <li class="comment">
+                <strong>{{ custom_model.user.username }}</strong> ({{ custom_model.email }})<br>
+                {{ custom_model.text|safe }}
+                {% if custom_model.image %}
+                    <img src="{{ custom_model.image.url }}" alt="Image">
+                {% endif %}
+                {% if custom_model.text_file %}
+                    <a href="{{ custom_model.text_file.url }}" target="_blank">Завантажити файл</a>
+                {% endif %}
+                <br>
+                {{ custom_model.created_at }}
+                <ul class="replies">
+                    <a href="{% url 'reply_to_comment' custom_model.id %}">Відповісти</a>
+                    {% for child in custom_model.replies.all %}
+                        <li class="comment{% if custom_model.parent_id %} reply{% endif %}">
+                            <strong>{{ child.user.username }}</strong> ({{ child.email }})<br>
+                            {{ child.text|safe }}
+                            {% if child.image %}
+                                <img src="{{ child.image.url }}" alt="Image">
+                            {% endif %}
+                            {% if child.text_file %}
+                                <a href="{{ child.text_file.url }}" target="_blank">Завантажити файл</a>
+                            {% endif %}
+                            <br>
+                            {{ child.created_at }}
+                            <ul class="replies">
+                                <a href="{% url 'reply_to_comment' child.id %}">Відповісти</a>
+                                {% for reply in child.replies.all %}
+                                    <li class="comment reply">
+                                        <strong>{{ reply.user.username }}</strong> ({{ reply.email }})<br>
+                                        {{ reply.text|safe }}
+                                        {% if reply.image %}
+                                            <img src="{{ reply.image.url }}" alt="Image">
+                                        {% endif %}
+                                        {% if reply.text_file %}
+                                            <a href="{{ reply.text_file.url }}" target="_blank">Завантажити файл</a>
+                                        {% endif %}
+                                        <br>
+                                        {{ reply.created_at }}
+                                        <ul class="replies">
+                                            {% for sub_reply in reply.replies.all %}
+                                                <li class="comment reply">
+                                                    <strong>{{ sub_reply.user.username }}</strong> ({{ sub_reply.email }})<br>
+                                                    {{ sub_reply.text|safe }}
+                                                    {% if sub_reply.image %}
+                                                        <img src="{{ sub_reply.image.url }}" alt="Image">
+                                                    {% endif %}
+                                                    {% if sub_reply.text_file %}
+                                                        <a href="{{ sub_reply.text_file.url }}" target="_blank">Завантажити файл</a>
+                                                    {% endif %}
+                                                    <br>
+                                                    {{ sub_reply.created_at }}
+                                                </li>
+                                            {% endfor %}
+                                            <a href="{% url 'reply_to_comment' child.id %}">Відповісти</a>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if custom_models.has_previous %}
+            <a href="?page=1">Перша</a>
+            <a href="?page={{ custom_models.previous_page_number }}">Попередня</a>
+        {% endif %}
+
+        <span class="current-page">Сторінка {{ custom_models.number }} з {{ custom_models.paginator.num_pages }}.</span>
+
+        {% if custom_models.has_next %}
+            <a href="?page={{ custom_models.next_page_number }}">Наступна</a>
+            <a href="?page={{ custom_models.paginator.num_pages }}">Остання</a>
+        {% endif %}
+    </div>
+</body>
+</html>
